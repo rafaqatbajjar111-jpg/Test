@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -118,48 +121,57 @@ fun AppNavigation() {
             var currentTab by remember { mutableStateOf("home") }
 
             Scaffold(
-                bottomBar = {
-                    BottomNavBar(
-                        selectedRoute = currentTab,
-                        onTabSelected = { tab ->
-                            currentTab = tab
-                        }
-                    )
-                }
+                containerColor = Color.Transparent
             ) { innerPadding ->
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding)
                 ) {
-                    when (currentTab) {
-                        "home" -> HomeScreen(
-                            viewModel = homeViewModel,
-                            onNavigateToTab = { route ->
-                                if (route == "support") {
-                                    navController.navigate("support")
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 100.dp) // Leave clean breathing room for the floating liquid glass bar
+                    ) {
+                        when (currentTab) {
+                            "home" -> HomeScreen(
+                                viewModel = homeViewModel,
+                                onNavigateToTab = { route ->
+                                    if (route == "support") {
+                                        navController.navigate("support")
+                                    }
                                 }
-                            }
-                        )
-                        "team" -> TeamScreen(
-                            viewModel = taskViewModel
-                        )
-                        "blog" -> BlogScreen(
-                            viewModel = blogViewModel
-                        )
-                        "mine" -> MineScreen(
-                            mineViewModel = mineViewModel,
-                            authViewModel = authViewModel,
-                            onNavigateToScreen = { route ->
-                                navController.navigate(route)
-                            },
-                            onLogoutSuccess = {
-                                navController.navigate("login") {
-                                    popUpTo("main") { inclusive = true }
+                            )
+                            "team" -> TeamScreen(
+                                viewModel = taskViewModel
+                            )
+                            "blog" -> BlogScreen(
+                                viewModel = blogViewModel
+                            )
+                            "mine" -> MineScreen(
+                                mineViewModel = mineViewModel,
+                                authViewModel = authViewModel,
+                                onNavigateToScreen = { route ->
+                                    navController.navigate(route)
+                                },
+                                onLogoutSuccess = {
+                                    navController.navigate("login") {
+                                        popUpTo("main") { inclusive = true }
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
+
+                    // Floating Liquid Glass Bottom Navigation Bar lifted from the bottom
+                    BottomNavBar(
+                        selectedRoute = currentTab,
+                        onTabSelected = { tab ->
+                            currentTab = tab
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 28.dp) // Floating margin elevated from the bottom safe drawing area
+                    )
                 }
             }
         }

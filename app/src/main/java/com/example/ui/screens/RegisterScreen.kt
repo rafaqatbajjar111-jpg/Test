@@ -47,11 +47,6 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var referralCode by remember { mutableStateOf(initialReferralCode ?: "") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var showGoogleDialog by remember { mutableStateOf(false) }
-    var showAppleDialog by remember { mutableStateOf(false) }
-    var showPhoneDialog by remember { mutableStateOf(false) }
-    var selectedSocialProvider by remember { mutableStateOf("") }
-    var selectedSocialEmail by remember { mutableStateOf("") }
 
     val context = androidx.compose.ui.platform.LocalContext.current
     val activity = context as? android.app.Activity
@@ -59,6 +54,10 @@ fun RegisterScreen(
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+    }
 
     LaunchedEffect(initialReferralCode) {
         if (!initialReferralCode.isNullOrBlank()) {
@@ -77,48 +76,6 @@ fun RegisterScreen(
             }
             else -> {}
         }
-    }
-
-    if (showGoogleDialog) {
-        GoogleAccountPickerDialog(
-            onDismissRequest = { showGoogleDialog = false },
-            onAccountSelected = { selectedEmail ->
-                showGoogleDialog = false
-                selectedSocialEmail = selectedEmail
-                selectedSocialProvider = "Google"
-                showPhoneDialog = true
-            }
-        )
-    }
-
-    if (showAppleDialog) {
-        AppleSignInDialog(
-            onDismissRequest = { showAppleDialog = false },
-            onAccountSelected = { selectedEmail ->
-                showAppleDialog = false
-                selectedSocialEmail = selectedEmail
-                selectedSocialProvider = "Apple"
-                showPhoneDialog = true
-            }
-        )
-    }
-
-    if (showPhoneDialog) {
-        SocialPhoneAndReferralDialog(
-            onDismissRequest = { showPhoneDialog = false },
-            onConfirm = { phone, referralCode ->
-                showPhoneDialog = false
-                activity?.let {
-                    viewModel.signInWithSocialProvider(
-                        activity = it,
-                        provider = selectedSocialProvider,
-                        email = selectedSocialEmail,
-                        phone = phone,
-                        referralCode = referralCode
-                    )
-                }
-            }
-        )
     }
 
     Scaffold(
@@ -243,16 +200,20 @@ fun RegisterScreen(
                     // Register Action Button
                     Button(
                         onClick = {
-                            if (!email.contains("@") || !email.contains(".") || phone.length < 10 || password.length < 6) {
+                            val trimmedEmail = email.trim()
+                            val trimmedPhone = phone.trim()
+                            val trimmedPassword = password.trim()
+                            val trimmedReferral = referralCode.trim()
+                            if (!trimmedEmail.contains("@") || !trimmedEmail.contains(".") || trimmedPhone.length < 10 || trimmedPassword.length < 6) {
                                 scope.launch {
                                     snackbarHostState.showSnackbar("Valid email, phone (10 digits) and password (min 6 chars) are required")
                                 }
                             } else {
-                                val refVal = if (referralCode.isBlank()) null else referralCode
+                                val refVal = if (trimmedReferral.isBlank()) null else trimmedReferral
                                 viewModel.register(
-                                    email = email,
-                                    phone = phone,
-                                    password = password,
+                                    email = trimmedEmail,
+                                    phone = trimmedPhone,
+                                    password = trimmedPassword,
                                     referralCode = refVal
                                 )
                             }
@@ -278,18 +239,6 @@ fun RegisterScreen(
                             )
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Google & Apple Premium Social Logins requested by user
-                    PremiumSocialLogins(
-                        onGoogleClick = {
-                            showGoogleDialog = true
-                        },
-                        onAppleClick = {
-                            showAppleDialog = true
-                        }
-                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))

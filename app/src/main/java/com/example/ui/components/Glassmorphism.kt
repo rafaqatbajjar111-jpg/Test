@@ -186,12 +186,12 @@ fun FrostedGlassCard(
             .clip(shape)
             .border(
                 BorderStroke(
-                    width = 1.dp,
+                    width = 1.2.dp,
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color(0x99FFFFFF), // Bright reflective top-left
-                            Color(0x3352B788), // Soft mint accent border glow
-                            Color(0x26000000)  // Subtle bottom-right grounding
+                            Color(0xC0FFFFFF), // Ultra-reflective top-left specular highlight
+                            Color(0x3D52B788), // Starbucks accent mint soft edge
+                            Color(0x1A000000)  // Soft ground shadow outline
                         )
                     )
                 ),
@@ -199,9 +199,9 @@ fun FrostedGlassCard(
             ),
         shape = shape,
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xE6FFFFFF) // Beautiful pure frosted translucent solid white glass (90% opacity)
+            containerColor = Color(0x54FFFFFF) // Beautiful, highly transparent liquid glass (33% opacity)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Premium elevated shadow for white UI depth
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // Keep flat glass overlay feel to maximize transparent depth
     ) {
         Column(
             modifier = Modifier
@@ -230,7 +230,7 @@ fun GlassTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
-        placeholder = { Text(placeholderText, color = Color(0x7A1B4332), fontSize = 14.sp) },
+        placeholder = { Text(placeholderText, color = Color(0x991B4332), fontSize = 14.sp) },
         leadingIcon = {
             Icon(
                 imageVector = leadingIcon,
@@ -246,8 +246,8 @@ fun GlassTextField(
         colors = OutlinedTextFieldDefaults.colors(
             focusedTextColor = PrimaryDarkGreen,
             unfocusedTextColor = PrimaryDarkGreen,
-            focusedContainerColor = Color(0xFFF1F6F3),
-            unfocusedContainerColor = Color(0xFFFAF9F6),
+            focusedContainerColor = Color(0x4DFFFFFF), // Translucent premium light glass
+            unfocusedContainerColor = Color(0x21FFFFFF), // Subtle ambient transparent tint
             focusedBorderColor = AccentGreen,
             unfocusedBorderColor = Color(0x261B4332),
             cursorColor = AccentGreen
